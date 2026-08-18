@@ -86,7 +86,7 @@ public class Main {
         }
         String itemName = item.getItemName();
         listOfItems.remove(item);
-        System.out.printf("Item [%s] has been removed from the inventory.\n", itemName);
+        System.out.printf("Item %s has been removed from the inventory.\n", itemName);
     }
 
     private static void displayItemsByCategory() {
@@ -133,7 +133,7 @@ public class Main {
             return;
         }
 
-        DisplayUtils.printMenu("EDIT", "Quantity", "Price");
+        DisplayUtils.printMenu("SORT BY", "Quantity", "Price");
         int sortBy = DataValidations.intChoiceValidation(sc, "Sort By", 1, 2);
 
         DisplayUtils.printMenu("SORTING ORDER", "Ascending", "Descending");
@@ -150,7 +150,10 @@ public class Main {
         ArrayList<Item> sortedItems = new ArrayList<>(listOfItems);
         sortedItems.sort(comparator);
 
-        DisplayUtils.tableHeader("SORTED ITEMS", true);
+        String sortField = (sortBy == 1) ? "QUANTITY" : "PRICE";
+        String sortOrder = (order == 1) ? "ASCENDING" : "DESCENDING";
+
+        DisplayUtils.tableHeader("SORTED BY " + sortField + " (" + sortOrder + ")", true);
         DisplayUtils.displayAllItemsTable(sortedItems);
     }
 
@@ -167,6 +170,7 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Welcome!");
+        //listOfItems.addAll(CsvHelper.loadFromCsv("items.csv")); for debugging
 
         boolean isDone = false;
         while (!isDone) {

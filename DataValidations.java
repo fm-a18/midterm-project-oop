@@ -31,7 +31,7 @@ public class DataValidations {
     public static boolean itemNumberExists(String itemID, ArrayList<Item> items) {
         boolean found = false;
         for (Item item : items) {
-            if (item.getItemID().equals(itemID)) {
+            if (item.getItemID().equalsIgnoreCase(itemID)) {
                 found = true;
                 break;
             }
@@ -78,8 +78,8 @@ public class DataValidations {
 
             if (input.isEmpty()) {
                 System.out.println("Error: Item Name cannot be empty.");
-            } else if (!input.matches("^[A-Za-z0-9 ]+$")) {
-                System.out.println("Error: Item Name must contain only letters, numbers, and spaces (2-50 characters).");
+            } else if (!input.matches("^[\\p{L}0-9 .,'-]{2,50}$")) {
+                System.out.println("Error: Item Name must be 2-50 characters (letters, numbers, spaces, and . , ' - allowed).");
             } else {
                 isValidated = true;
             }
@@ -202,7 +202,7 @@ public class DataValidations {
                 input = "Entertainment";
                 isValidated = true;
             } else {
-                System.out.println("Error: Category [" + input + "] does not exist!");
+                System.out.println("Error: Category " + input + " does not exist!");
             }
         }
         return input;

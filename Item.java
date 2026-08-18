@@ -30,13 +30,15 @@ public abstract class Item {
     public void setItemQuantity(int newQuantity) {
         if (newQuantity <= 0) {
             System.out.println("Quantity cannot be negative.");
+            return;
         }
         this.itemQuantity = newQuantity;
     }
 
     public void setItemPrice(double newPrice) {
         if (newPrice < 0) {
-            System.out.println("Price cannot be negative.");
+            System.out.println("Price must be greater than Php 0.");
+            return;
         }
         this.itemPrice = newPrice;
     }
