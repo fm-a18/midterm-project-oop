@@ -4,84 +4,11 @@ import java.util.Scanner;
 
 public class Main {
     public static Scanner sc = new Scanner(System.in);
-    public static final int tableWidth = 100;
     private static final ArrayList<Item> listOfItems = new ArrayList<>();
 
-    public static void tableHeader(String tableName, boolean showCategory) {
-        int tableNameLength = tableName.length();
-        int padding = (tableWidth - tableNameLength) / 2;
-
-        System.out.println("=".repeat(tableWidth));
-        System.out.println(" ".repeat(Math.max(0, padding)) + tableName);
-        System.out.println("=".repeat(tableWidth));
-
-        if (showCategory) {
-            System.out.printf(
-                    "%-10s | %-30s | %-15s | %-15s | %-15s%n",
-                    "ID", "Name", "Quantity", "Price", "Category"
-            );
-        } else {
-            System.out.printf(
-                    "%-10s | %-30s | %-15s | %-15s%n",
-                    "ID", "Name", "Quantity", "Price"
-            );
-        }
-
-        System.out.println("-".repeat(tableWidth));
-    }
-
-    public static void displayAllItemsTable(ArrayList<Item> items) {
-        if (items.isEmpty()) {
-            System.out.println("No items found.");
-            System.out.println("-".repeat(tableWidth));
-            return;
-        }
-
-        for (Item item : items) {
-            System.out.printf(
-                    "%-10s | %-30s | %-15d | %-15s | %-15s%n",
-                    item.getItemID(),
-                    item.getItemName(),
-                    item.getItemQuantity(),
-                    String.format("Php %,.2f", item.getItemPrice()),
-                    item.getCategory()
-            );
-        }
-
-        System.out.println("-".repeat(tableWidth));
-    }
-
-    public static void displayCategoryTable(ArrayList<Item> items) {
-        if (items.isEmpty()) {
-            System.out.println("No items found.");
-            System.out.println("-".repeat(tableWidth));
-            return;
-        }
-
-        for (Item item : items) {
-            System.out.printf(
-                    "%-10s | %-30s | %-15d | %-15s%n",
-                    item.getItemID(),
-                    item.getItemName(),
-                    item.getItemQuantity(),
-                    String.format("Php %,.2f", item.getItemPrice())
-            );
-        }
-
-        System.out.println("-".repeat(tableWidth));
-    }
-
     private static void addItem() {
-        System.out.println("""
-                ========================================
-                        AVAILABLE CATEGORIES
-                ========================================
-                 [1] Clothing
-                 [2] Electronics
-                 [3] Entertainment
-                ========================================
-                """);
-        int itemCategory = DataValidations.intChoiceValidation(sc, "Category Type", 1, 2, 3);
+        DisplayUtils.printMenuInput("AVAILABLE CATEGORIES","Clothing", "Electronics", "Entertainment");
+        String itemCategory = DataValidations.categoryValidation(sc);
         String itemID = DataValidations.validateItemID(sc, listOfItems);
         String itemName = DataValidations.validateItemName(sc);
         int itemQuantity = DataValidations.validateInt(sc, "Item Quantity");
@@ -89,20 +16,20 @@ public class Main {
 
         Item newItem;
         switch (itemCategory) {
-            case 1 -> newItem = new Clothing(itemID, itemName, itemQuantity, itemPrice);
-            case 2 -> newItem = new Electronics(itemID, itemName, itemQuantity, itemPrice);
-            case 3 -> newItem = new Entertainment(itemID, itemName, itemQuantity, itemPrice);
+            case "Clothing" -> newItem = new Clothing(itemID, itemName, itemQuantity, itemPrice);
+            case "Electronics" -> newItem = new Electronics(itemID, itemName, itemQuantity, itemPrice);
+            case "Entertainment" -> newItem = new Entertainment(itemID, itemName, itemQuantity, itemPrice);
             default -> throw new IllegalStateException("Unexpected Category Type: " + itemCategory);
         }
 
         listOfItems.add(newItem);
         newItem.displayInfo();
-
+        System.out.println("Item Added successfully!\n");
     }
 
     public static Item getItemByID(Scanner sc, ArrayList<Item> items) {
         if (items.isEmpty()) {
-            System.out.println("No items available.");
+            System.out.println("No items found.");
             return null;
         }
 
@@ -114,7 +41,7 @@ public class Main {
             }
         }
 
-        System.out.println("Item ID not found.");
+        System.out.println("Item not found.");
         return null;
     }
 
@@ -123,44 +50,31 @@ public class Main {
         if (item == null) {
             return;
         }
-        System.out.println("""
-                ========================================
-                                 EDIT
-                ========================================
-                 [1] Quantity
-                 [2] Price
-                ========================================
-                """);
+        DisplayUtils.printMenu("EDIT", "Quantity", "Price");
         int editChoice = DataValidations.intChoiceValidation(sc, "Edit Item", 1, 2);
 
         switch (editChoice) {
             case 1 -> {
                 int oldQuantity = item.getItemQuantity();
-                int newQuantity = DataValidations.validateInt(sc, "New Quantity");
+                int newQuantity = DataValidations.validateIntForUpdate(sc, "New Quantity");
                 item.setItemQuantity(newQuantity);
-                System.out.printf("""
-                        ========================================
-                                    QUANTITY UPDATED
-                        ========================================
-                         Item         : %s
-                         Old Quantity : %d
-                         New Quantity : %d
-                        ========================================
-                        %n""", item.getItemName(), oldQuantity, newQuantity);
+
+                DisplayUtils.printSummaryBox("QUANTITY UPDATED", new String[][]{
+                        {"Item", item.getItemName()},
+                        {"Old Quantity", String.valueOf(oldQuantity)},
+                        {"New Quantity", String.valueOf(newQuantity)}
+                });
             }
             case 2 -> {
                 double oldPrice = item.getItemPrice();
-                double newPrice = DataValidations.validateInt(sc, "New Price");
+                double newPrice = DataValidations.validatePrice(sc);
                 item.setItemPrice(newPrice);
-                System.out.printf("""
-                        ========================================
-                                      ITEM UPDATED
-                        ========================================
-                         Item      : %s
-                         Old Price : %.2f
-                         New Price : %.2f
-                        ========================================
-                        %n""", item.getItemName(), oldPrice, newPrice);
+
+                DisplayUtils.printSummaryBox("PRICE UPDATED", new String[][]{
+                        {"Item", item.getItemName()},
+                        {"Old Price", String.format("Php %,.2f", oldPrice)},
+                        {"New Price", String.format("Php %,.2f", newPrice)}
+                });
             }
         }
     }
@@ -172,7 +86,7 @@ public class Main {
         }
         String itemName = item.getItemName();
         listOfItems.remove(item);
-        System.out.printf("%s has been removed from the inventory.\n", itemName);
+        System.out.printf("Item [%s] has been removed from the inventory.\n", itemName);
     }
 
     private static void displayItemsByCategory() {
@@ -181,23 +95,8 @@ public class Main {
             return;
         }
 
-        System.out.println("""
-                ========================================
-                           AVAILABLE CATEGORIES
-                ========================================
-                 [1] Clothing
-                 [2] Electronics
-                 [3] Entertainment
-                ========================================
-                """);
-        int itemCategory = DataValidations.intChoiceValidation(sc, "Category Type", 1, 2, 3);
-
-        String categoryName = switch (itemCategory) {
-            case 1 -> "Clothing";
-            case 2 -> "Electronics";
-            case 3 -> "Entertainment";
-            default -> throw new IllegalStateException("Unexpected Category Type: " + itemCategory);
-        };
+        DisplayUtils.printMenuInput("AVAILABLE CATEGORIES", "Clothing", "Electronics", "Entertainment");
+        String categoryName = DataValidations.categoryValidation(sc);
 
         ArrayList<Item> filteredItems = new ArrayList<>();
         for (Item item : listOfItems) {
@@ -206,13 +105,18 @@ public class Main {
             }
         }
 
-        tableHeader(categoryName.toUpperCase(), false);
-        displayCategoryTable(filteredItems);
+        if (filteredItems.isEmpty()) {
+            System.out.printf("Category [%s] does not exist!\n\n", categoryName);
+            return;
+        }
+
+        DisplayUtils.tableHeader(categoryName.toUpperCase(), false);
+        DisplayUtils.displayCategoryTable(filteredItems);
     }
 
     private static void displayAllItems() {
-        tableHeader("ALL ITEMS", true);
-        displayAllItemsTable(listOfItems);
+        DisplayUtils.tableHeader("ALL ITEMS", true);
+        DisplayUtils.displayAllItemsTable(listOfItems);
     }
 
     private static void searchItem() {
@@ -229,23 +133,10 @@ public class Main {
             return;
         }
 
-        System.out.println("""
-                ========================================
-                                SORT BY
-                ========================================
-                 [1] Quantity
-                 [2] Price
-                ========================================
-                """);
+        DisplayUtils.printMenu("EDIT", "Quantity", "Price");
         int sortBy = DataValidations.intChoiceValidation(sc, "Sort By", 1, 2);
-        System.out.println("""
-                ========================================
-                             SORTING ORDER
-                ========================================
-                 [1] Ascending
-                 [2] Descending
-                ========================================
-                """);
+
+        DisplayUtils.printMenu("SORTING ORDER", "Ascending", "Descending");
         int order = DataValidations.intChoiceValidation(sc, "Order", 1, 2);
 
         Comparator<Item> comparator = (sortBy == 1)
@@ -259,19 +150,19 @@ public class Main {
         ArrayList<Item> sortedItems = new ArrayList<>(listOfItems);
         sortedItems.sort(comparator);
 
-        tableHeader("SORTED ITEMS", true);
-        displayAllItemsTable(sortedItems);
+        DisplayUtils.tableHeader("SORTED ITEMS", true);
+        DisplayUtils.displayAllItemsTable(sortedItems);
     }
 
     private static void displayLowStockItems() {
         ArrayList<Item> lowStockItems = new ArrayList<>();
-        for (Item item : listOfItems){
-            if(item.getItemQuantity() <= 5){
+        for (Item item : listOfItems) {
+            if (item.getItemQuantity() <= 5) {
                 lowStockItems.add(item);
             }
         }
-        tableHeader("LOW STOCK ITEMS", true);
-        displayAllItemsTable(lowStockItems);
+        DisplayUtils.tableHeader("LOW STOCK ITEMS", true);
+        DisplayUtils.displayAllItemsTable(lowStockItems);
     }
 
     public static void main(String[] args) {
@@ -279,21 +170,17 @@ public class Main {
 
         boolean isDone = false;
         while (!isDone) {
-            System.out.println("""
-                    ==================================================
-                                INVENTORY MANAGEMENT SYSTEM
-                    ==================================================
-                    [1] Add Item
-                    [2] Update Item
-                    [3] Remove Item
-                    [4] Display Items by Category
-                    [5] Display All Items
-                    [6] Search Item
-                    [7] Sort Items
-                    [8] Display Low Stock Items
-                    [9] Exit
-                    ==================================================
-                    """);
+            DisplayUtils.printMenu("INVENTORY MANAGEMENT SYSTEM",
+                    "Add Item",
+                    "Update Item",
+                    "Remove Item",
+                    "Display Items by Category",
+                    "Display All Items",
+                    "Search Item",
+                    "Sort Items",
+                    "Display Low Stock Items",
+                    "Exit"
+            );
 
             int menuChoice = DataValidations.intChoiceValidation(sc, "Select Option", 1, 2, 3, 4, 5, 6, 7, 8, 9);
             switch (menuChoice) {

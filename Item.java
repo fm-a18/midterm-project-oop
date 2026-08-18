@@ -28,7 +28,7 @@ public abstract class Item {
     }
 
     public void setItemQuantity(int newQuantity) {
-        if (newQuantity < 0) {
+        if (newQuantity <= 0) {
             System.out.println("Quantity cannot be negative.");
         }
         this.itemQuantity = newQuantity;
@@ -52,7 +52,6 @@ public abstract class Item {
                          Item Quantity : %d
                          Item Price    : Php %,.2f
                         ========================================
-                        
                         """,
                 itemID,
                 itemName,
