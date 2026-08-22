@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class DataValidations {
-    public static String validateItemID(Scanner sc, ArrayList<Item> items) {
+    public static String validateItemID(Scanner sc, ArrayList<Item> items) {  //capitalized or not
         boolean isValidated = false;
         String input = "";
 
@@ -96,8 +96,8 @@ public class DataValidations {
             System.out.print("Price: ");
             String input = sc.nextLine().trim();
 
-            if (!input.matches("(0|[1-9][0-9]*)(\\.[0-9]+)?")) {
-                System.out.println("Error: Please enter a valid number (e.g., 350, 400.5).");
+            if (!input.matches("(0|[1-9][0-9]*)(\\.[0-9][0-9])?")) {
+                System.out.println("Error: Please enter a valid number (e.g., 350.25, 400.5).");
                 continue;
             }
 
@@ -111,7 +111,7 @@ public class DataValidations {
                     isValidated = true;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Error: Please enter a valid number (e.g., 350, 400, 400.5).");
+                System.out.println("Error: Please enter a valid number (e.g., 350, 400, 400.5) from 0.1-1000000.");
             }
         }
         return value;
@@ -127,7 +127,7 @@ public class DataValidations {
             String input = sc.nextLine().trim();
 
             if (!input.matches("[1-9][0-9]*")) {
-                System.out.println("Error: Please enter whole numbers only.");
+                System.out.println("Error: Please enter whole numbers only from 1-10000.");
                 continue;
             }
 
@@ -141,7 +141,7 @@ public class DataValidations {
                     isValidated = true;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Error: Please enter a valid number.");
+                System.out.println("Error: Please enter a valid number from 1-10000.");
             }
         }
         return value;
@@ -157,7 +157,7 @@ public class DataValidations {
             String input = sc.nextLine().trim();
 
             if (!input.matches("[0-9]+")) {
-                System.out.println("Error: Please enter whole numbers only.");
+                System.out.println("Error: Please enter whole numbers only from 0-10000.");
                 continue;
             }
 
@@ -171,7 +171,7 @@ public class DataValidations {
                     isValidated = true;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Error: Please enter a valid number.");
+                System.out.println("Error: Please enter a valid number from 0-10000.");
             }
         }
         return value;
