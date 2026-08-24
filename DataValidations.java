@@ -156,7 +156,7 @@ public class DataValidations {
             System.out.print(prompt + ": ");
             String input = sc.nextLine().trim();
 
-            if (!input.matches("[0-9]+")) {
+            if (!input.matches("0|[1-9]")) {
                 System.out.println("Error: Please enter whole numbers only from 0-10000.");
                 continue;
             }

@@ -28,16 +28,16 @@ public abstract class Item {
     }
 
     public void setItemQuantity(int newQuantity) {
-        if (newQuantity <= 0) {
-            System.out.println("Quantity cannot be negative.");
+        if (newQuantity < 0) {
+            System.out.println("Error: Quantity cannot be negative.");
             return;
         }
         this.itemQuantity = newQuantity;
     }
 
     public void setItemPrice(double newPrice) {
-        if (newPrice < 0) {
-            System.out.println("Price must be greater than Php 0.");
+        if (newPrice <= 0) {
+            System.out.println("Error: Price must be greater than Php 0.");
             return;
         }
         this.itemPrice = newPrice;
