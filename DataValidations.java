@@ -1,15 +1,16 @@
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class DataValidations {
-    public static String validateItemID(Scanner sc, ArrayList<Item> items) {  //capitalized or not
+    public static String validateItemID(Scanner sc, ArrayList<Item> items) {
         boolean isValidated = false;
         String input = "";
 
         while (!isValidated) {
-            System.out.print("Item ID (e.g., C001, ELEC-23): ");
+            System.out.print("Item ID (CL001, EL001, EN001): ");
             try {
-                input = sc.nextLine().trim();
+                input = sc.nextLine().trim().toUpperCase(Locale.ROOT);
             } catch (java.util.NoSuchElementException e) {
                 System.out.println("Error: No input available. Please try again.");
                 continue;
@@ -17,8 +18,8 @@ public class DataValidations {
 
             if (input.isEmpty()) {
                 System.out.println("Error: Item ID cannot be empty.");
-            } else if (!input.matches("^[A-Za-z0-9_-]{3,20}$")) {
-                System.out.println("Error: Item ID must contain only letters and numbers (3-20 characters).");
+            } else if (!input.matches("^(CL|EL|EN)00[1-9]\\d*$")) {
+                System.out.println("Error: Invalid Item ID format. Please follow the specified Item ID format.");
             } else if (itemNumberExists(input, items)) {
                 System.out.println("Error: Item ID already exists.");
             } else {
@@ -241,10 +242,52 @@ public class DataValidations {
         return value;
     }
 
+    public static char charChoiceValidation(Scanner sc, String prompt, char... choices) {
+        boolean isValidated = false;
+        char input = ' ';
+        while (!isValidated) {
+            try {
+                System.out.print(prompt + ": ");
+                String line = sc.nextLine().trim().toUpperCase();
+                if (line.length() != 1) {
+                    printValidChoices(choices);
+                    continue;
+                }
+                input = line.charAt(0);
+                boolean found = false;
+                for (char choice : choices) {
+                    if (input == Character.toUpperCase(choice)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    isValidated = true;
+                } else {
+                    printValidChoices(choices);
+                }
+            } catch (Exception e) {
+                printValidChoices(choices);
+            }
+        }
+        return input;
+    }
+
     public static void printValidChoices(int... choices) { //int values
         System.out.print("Error: Please select only from (");
         for (int i = 0; i < choices.length; i++) {
             System.out.print(choices[i]);
+            if (i < choices.length - 1) {
+                System.out.print(", ");
+            }
+        }
+        System.out.println(").");
+    }
+
+    public static void printValidChoices(char... choices) { //char values
+        System.out.print("Error: Please select only from (");
+        for (int i = 0; i < choices.length; i++) {
+            System.out.print(Character.toUpperCase(choices[i]));
             if (i < choices.length - 1) {
                 System.out.print(", ");
             }

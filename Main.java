@@ -4,12 +4,20 @@ import java.util.Scanner;
 
 public class Main {
     public static Scanner sc = new Scanner(System.in);
-    private static final ArrayList<Item> listOfItems = new ArrayList<>();
+    public static final ArrayList<Item> listOfItems = new ArrayList<>();
 
-    private static void addItem() {
+    public static void addItem() {
         DisplayUtils.printMenuInput("AVAILABLE CATEGORIES","Clothing", "Electronics", "Entertainment");
         String itemCategory = DataValidations.categoryValidation(sc);
+
+        DisplayUtils.printMenuInput(
+                "ITEM ID FORMAT",
+                "Clothing: CL00 followed by any number (e.g., CL001)",
+                "Electronics: EL00 followed by any number (e.g., EL001)",
+                "Entertainment: EN00 followed by any number (e.g., EN001)"
+        );
         String itemID = DataValidations.validateItemID(sc, listOfItems);
+
         String itemName = DataValidations.validateItemName(sc);
         int itemQuantity = DataValidations.validateInt(sc, "Item Quantity");
         double itemPrice = DataValidations.validatePrice(sc);
@@ -45,7 +53,7 @@ public class Main {
         return null;
     }
 
-    private static void updateItem() {
+    public static void updateItem() {
         Item item = getItemByID(sc, listOfItems);
         if (item == null) {
             return;
@@ -65,6 +73,7 @@ public class Main {
                         {"New Quantity", String.valueOf(newQuantity)}
                 });
             }
+
             case 2 -> {
                 double oldPrice = item.getItemPrice();
                 double newPrice = DataValidations.validatePrice(sc);
@@ -79,17 +88,31 @@ public class Main {
         }
     }
 
-    private static void removeItem() {
-        Item item = getItemByID(sc, listOfItems);
-        if (item == null) {
-            return;
+    public static void removeItem() {
+        boolean isConfirmed = false;
+        while (!isConfirmed){
+            Item item = getItemByID(sc, listOfItems);
+
+            if (item == null) {
+                return;
+            }
+
+            String itemName = item.getItemName();
+            char confirmDeletion = DataValidations.charChoiceValidation(sc, "Are you sure you want to remove this item? (Y/N)", 'Y', 'N');
+            if (confirmDeletion == 'Y'){
+
+                listOfItems.remove(item);
+                System.out.printf("Item %s has been removed from the inventory.\n", itemName);
+                isConfirmed = true;
+            }
+            else {
+                System.out.println("Item removal cancelled!");
+                return;
+            }
         }
-        String itemName = item.getItemName();
-        listOfItems.remove(item);
-        System.out.printf("Item %s has been removed from the inventory.\n", itemName);
     }
 
-    private static void displayItemsByCategory() {
+    public static void displayItemsByCategory() {
         if (listOfItems.isEmpty()) {
             System.out.println("No items available.");
             return;
@@ -106,7 +129,7 @@ public class Main {
         }
 
         if (filteredItems.isEmpty()) {
-            System.out.printf("Category [%s] does not exist!\n\n", categoryName);
+            System.out.printf("Category [%s] is empty!\n\n", categoryName);
             return;
         }
 
@@ -114,12 +137,12 @@ public class Main {
         DisplayUtils.displayCategoryTable(filteredItems);
     }
 
-    private static void displayAllItems() {
+    public static void displayAllItems() {
         DisplayUtils.tableHeader("ALL ITEMS", true);
         DisplayUtils.displayAllItemsTable(listOfItems);
     }
 
-    private static void searchItem() {
+    public static void searchItem() {
         Item item = getItemByID(sc, listOfItems);
         if (item == null) {
             return;
@@ -127,7 +150,7 @@ public class Main {
         item.displayInfo();
     }
 
-    private static void sortItems() {
+    public static void sortItems() {
         if (listOfItems.isEmpty()) {
             System.out.println("No items available.");
             return;
@@ -157,7 +180,7 @@ public class Main {
         DisplayUtils.displayAllItemsTable(sortedItems);
     }
 
-    private static void displayLowStockItems() {
+    public static void displayLowStockItems() {
         ArrayList<Item> lowStockItems = new ArrayList<>();
         for (Item item : listOfItems) {
             if (item.getItemQuantity() <= 5) {
@@ -170,7 +193,7 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Welcome!");
-        //listOfItems.addAll(CsvHelper.loadFromCsv("items.csv")); for debugging
+        //listOfItems.addAll(CsvHelper.loadFromCsv("items.csv")); //for debugging
 
         boolean isDone = false;
         while (!isDone) {
