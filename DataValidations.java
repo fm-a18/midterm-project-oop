@@ -1,16 +1,18 @@
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class DataValidations {
-    public static String validateItemID(Scanner sc, ArrayList<Item> items) {
+    public static final int MAX_QUANTITY = 10_000;
+    public static final double MAX_PRICE = 1_000_000;
+
+    public static String validateItemID(Scanner sc, ArrayList<Item> items, String expectedPrefix) {
         boolean isValidated = false;
         String input = "";
 
         while (!isValidated) {
             System.out.print("Item ID (CL001, EL001, EN001): ");
             try {
-                input = sc.nextLine().trim().toUpperCase(Locale.ROOT);
+                input = sc.nextLine().trim().toUpperCase();
             } catch (java.util.NoSuchElementException e) {
                 System.out.println("Error: No input available. Please try again.");
                 continue;
@@ -20,7 +22,9 @@ public class DataValidations {
                 System.out.println("Error: Item ID cannot be empty.");
             } else if (!input.matches("^(CL|EL|EN)\\d{3}$")) {
                 System.out.println("Error: Invalid Item ID format. Please follow the specified Item ID format.");
-            } else if (itemNumberExists(input, items)) {
+            } else if (!input.startsWith(expectedPrefix)) {
+                System.out.printf("Error: Item ID must start with '%s' for this category.\n", expectedPrefix);
+            } else if (itemIDExists(input, items)) {
                 System.out.println("Error: Item ID already exists.");
             } else {
                 isValidated = true;
@@ -29,7 +33,7 @@ public class DataValidations {
         return input;
     }
 
-    public static boolean itemNumberExists(String itemID, ArrayList<Item> items) {
+    public static boolean itemIDExists(String itemID, ArrayList<Item> items) {
         boolean found = false;
         for (Item item : items) {
             if (item.getItemID().equalsIgnoreCase(itemID)) {
@@ -91,14 +95,13 @@ public class DataValidations {
     public static double validatePrice(Scanner sc) {
         boolean isValidated = false;
         double value = 0;
-        final double MAX_PRICE = 1_000_000;
 
         while (!isValidated) {
             System.out.print("Price: ");
             String input = sc.nextLine().trim();
 
             if (!input.matches("(0|[1-9][0-9]*)(\\.[0-9][0-9])?")) {
-                System.out.println("Error: Please enter a valid number (e.g., 350.25, 400.5).");
+                System.out.println("Error: Please enter a valid number (e.g., 350.25, 400.50).");
                 continue;
             }
 
@@ -112,7 +115,7 @@ public class DataValidations {
                     isValidated = true;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Error: Please enter a valid number (e.g., 350, 400, 400.5) from 0.1-1000000.");
+                System.out.println("Error: Please enter a valid number (e.g., 350, 400, 400.50) from 0.1-1000000.");
             }
         }
         return value;
@@ -121,7 +124,6 @@ public class DataValidations {
     public static int validateInt(Scanner sc, String prompt) { //limit
         int value = 0;
         boolean isValidated = false;
-        final int MAX_QUANTITY = 10_000;
 
         while (!isValidated) {
             System.out.print(prompt + ": ");
@@ -151,13 +153,12 @@ public class DataValidations {
     public static int validateIntForUpdate(Scanner sc, String prompt) { //limit
         int value = 0;
         boolean isValidated = false;
-        final int MAX_QUANTITY = 10_000;
 
         while (!isValidated) {
             System.out.print(prompt + ": ");
             String input = sc.nextLine().trim();
 
-            if (!input.matches("0|[1-9]")) {
+            if (!input.matches("0|[1-9][0-9]*")) {
                 System.out.println("Error: Please enter whole numbers only from 0-10000.");
                 continue;
             }

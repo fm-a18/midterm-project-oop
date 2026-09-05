@@ -16,7 +16,14 @@ public class Main {
                 "Electronics   | EL### (e.g., EL001)",
                 "Entertainment | EN### (e.g., EN001)"
         );
-        String itemID = DataValidations.validateItemID(sc, listOfItems);
+
+        String itemPrefix = switch (itemCategory){
+            case "Clothing" -> "CL";
+            case "Electronics" -> "EL";
+            case "Entertainment" -> "EN";
+            default -> throw new IllegalStateException("Unexpected Category Type: " + itemCategory);
+        };
+        String itemID = DataValidations.validateItemID(sc, listOfItems, itemPrefix);
 
         String itemName = DataValidations.validateItemName(sc);
         int itemQuantity = DataValidations.validateInt(sc, "Item Quantity");
@@ -89,25 +96,19 @@ public class Main {
     }
 
     public static void removeItem() {
-        boolean isConfirmed = false;
-        while (!isConfirmed) {
-            Item item = getItemByID(sc, listOfItems);
+        Item item = getItemByID(sc, listOfItems);
 
-            if (item == null) {
-                return;
-            }
+        if (item == null) {
+            return;
+        }
 
-            String itemName = item.getItemName();
-            char confirmDeletion = DataValidations.charChoiceValidation(sc, "Are you sure you want to remove this item? (Y/N)", 'Y', 'N');
-            if (confirmDeletion == 'Y') {
-
-                listOfItems.remove(item);
-                System.out.printf("Item %s has been removed from the inventory.\n", itemName);
-                isConfirmed = true;
-            } else {
-                System.out.println("Item removal cancelled!");
-                return;
-            }
+        String itemName = item.getItemName();
+        char confirmDeletion = DataValidations.charChoiceValidation(sc, String.format("Are you sure you want to remove item '%s'? (Y/N)", itemName), 'Y', 'N');
+        if (confirmDeletion == 'Y') {
+            listOfItems.remove(item);
+            System.out.printf("Item '%s' has been removed from the inventory.\n", itemName);
+        } else {
+            System.out.println("Item removal cancelled!");
         }
     }
 
@@ -128,7 +129,7 @@ public class Main {
         }
 
         if (filteredItems.isEmpty()) {
-            System.out.printf("Category [%s] is empty!\n\n", categoryName);
+            System.out.printf("Category '%s' is empty!\n\n", categoryName);
             return;
         }
 
