@@ -7,14 +7,14 @@ public class Main {
     public static final ArrayList<Item> listOfItems = new ArrayList<>();
 
     public static void addItem() {
-        DisplayUtils.printMenuInput("AVAILABLE CATEGORIES","Clothing", "Electronics", "Entertainment");
+        DisplayUtils.printMenuInput("AVAILABLE CATEGORIES", "Clothing", "Electronics", "Entertainment");
         String itemCategory = DataValidations.categoryValidation(sc);
 
         DisplayUtils.printMenuInput(
                 "ITEM ID FORMAT",
-                "Clothing: CL00 followed by any number (e.g., CL001)",
-                "Electronics: EL00 followed by any number (e.g., EL001)",
-                "Entertainment: EN00 followed by any number (e.g., EN001)"
+                "Clothing      | CL### (e.g., CL001)",
+                "Electronics   | EL### (e.g., EL001)",
+                "Entertainment | EN### (e.g., EN001)"
         );
         String itemID = DataValidations.validateItemID(sc, listOfItems);
 
@@ -90,7 +90,7 @@ public class Main {
 
     public static void removeItem() {
         boolean isConfirmed = false;
-        while (!isConfirmed){
+        while (!isConfirmed) {
             Item item = getItemByID(sc, listOfItems);
 
             if (item == null) {
@@ -99,13 +99,12 @@ public class Main {
 
             String itemName = item.getItemName();
             char confirmDeletion = DataValidations.charChoiceValidation(sc, "Are you sure you want to remove this item? (Y/N)", 'Y', 'N');
-            if (confirmDeletion == 'Y'){
+            if (confirmDeletion == 'Y') {
 
                 listOfItems.remove(item);
                 System.out.printf("Item %s has been removed from the inventory.\n", itemName);
                 isConfirmed = true;
-            }
-            else {
+            } else {
                 System.out.println("Item removal cancelled!");
                 return;
             }

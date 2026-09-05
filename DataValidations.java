@@ -18,7 +18,7 @@ public class DataValidations {
 
             if (input.isEmpty()) {
                 System.out.println("Error: Item ID cannot be empty.");
-            } else if (!input.matches("^(CL|EL|EN)00[1-9]\\d*$")) {
+            } else if (!input.matches("^(CL|EL|EN)\\d{3}$")) {
                 System.out.println("Error: Invalid Item ID format. Please follow the specified Item ID format.");
             } else if (itemNumberExists(input, items)) {
                 System.out.println("Error: Item ID already exists.");
